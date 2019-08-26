@@ -25,8 +25,8 @@ driver.implicitly_wait(5) #take a 5
 username_input = driver.find_element_by_id('input-1')
 password_input = driver.find_element_by_id('input-2')
 
-username_input.send_keys('########')
-password_input.send_keys('#####')
+username_input.send_keys('####')
+password_input.send_keys('######')
 password_input.send_keys(Keys.ENTER)
 
 # get the contest leaderboard
@@ -35,16 +35,11 @@ def get_leaderboard(contestlink,leaderboard):
     url = 'https://www.hackerrank.com/' + contestlink + leaderboard
     driver.get(url)
     driver.implicitly_wait(7) #wait for 7
-    try:
-        table_div = driver.find_element_by_id("leaders")
-    except:
-        try:
-            table_div = driver.find_element_by_id("leaders")
-        except:
-            pass
-        print("some error occured. Retrying")
-        #get_leaderboard(contestlink,leaderboard)
+
+    ignored_exceptions=(NoSuchElementException,StaleElementReferenceException,)
+    table_div = WebDriverWait(driver, 7,ignored_exceptions=ignored_exceptions).until(expected_conditions.presence_of_element_located((By.ID, 'leaders')))
     divs = table_div.find_elements_by_class_name('leaderboard-list-view')
+
     for div in divs:
             parent_div      = div.find_elements_by_class_name('leaderboard-row')[0]
             divs_           = parent_div.find_elements_by_tag_name('div') #6 child divs in each row
@@ -62,10 +57,10 @@ def get_leaderboard(contestlink,leaderboard):
 # 2.  contest date
 # 3.  contest total score
 # 4.  leaderboard tiles at bottom 
-contestlink = "t23fcxx"
-date = '14-Aug-19'
+contestlink = "t23exxx"
+date = '16-Aug-19'
 total = 80
-pagetiles = 7
+pagetiles = 4
 test = 'Test2'
 
 for i in range(1,pagetiles+1):
